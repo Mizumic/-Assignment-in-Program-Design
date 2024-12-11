@@ -1,9 +1,19 @@
 //默认0，1，2，3，4代指nx南校，bx,北校，dx东校，zh珠海，sz深圳
 //注意button结尾，s start, e exchange, x exit, m music.
 #define _CRT_SECURE_NO_WARNINGS
+#include<windows.h>
 #include <iostream>
 #include <graphics.h>
-//定义按钮
+char GetChar()//输入一个字符（非空格、非回车、ASCII码大于零）
+{
+    char c;
+    do
+    {
+        c = getchar();
+    } while (c == '\n' || c == ' ' || c < 0);
+    return c;
+}
+
 struct Button {
     IMAGE normal, hover, down;
     int x, y, width, height;
@@ -190,31 +200,156 @@ void playMusic() {
 }
 
 
-void play(int* Bktype) {
+void preface(int Bktype, int Buttontype) {
     cleardevice();
-    printscreen(*Bktype);
-    setlinecolor(RED);
-    rectangle(22, 199, 476, 653);
-    Button back;
-    initButton(back, "gamefilepics\\back.png", "gamefilepics\\back.png", "gamefilepics\\back.png", 0, 0, 50, 50);
+    printscreen(Bktype);
+    IMAGE preface;
+    Button goon;
+    if (Buttontype == 1) {
+        loadimage(&preface, "\gamefilepics\\rule1.png", 454, 454);//前言框的位置与游戏框的位置一致
+        putimage(22, 199, &preface);
+        initButton(goon, "\gamefilepics\\button\\continue1.png", "\gamefilepics\\button\\continue1.png", "\gamefilepics\\button\\continue1.png", 270, 20, 184, 47);
+        MOUSEMSG msg{};
+        bool running = true;
+        while (running) {
+            drawButton(goon);
+            while (msg.uMsg != WM_LBUTTONUP) {
+                msg = GetMouseMsg();
+                updateButtonState(goon, msg);
+            }
+            // 处理按钮点击事件
+            if (isMouseOnButton(goon, msg.x, msg.y) && msg.uMsg == WM_LBUTTONUP) {
+                cleardevice();
+                running = false; // 返回主菜单
+            }
+            // 重置按钮状态
+            goon.isDown = false;
+            goon.isHover = false;
+        }
+    }
+
+    else {
+        loadimage(&preface, "\gamefilepics\\rule0.png", 454, 454);//前言框的位置与游戏框的位置一致
+        putimage(22, 199, &preface);
+        initButton(goon, "\gamefilepics\\button\\continue0.png", "\gamefilepics\\button\\continue0.png", "\gamefilepics\\button\\continue0.png", 270, 20, 184, 47);
+        MOUSEMSG msg{};
+        bool running = true;
+        while (running) {
+            drawButton(goon);
+            while (msg.uMsg != WM_LBUTTONUP) {
+                msg = GetMouseMsg();
+                updateButtonState(goon, msg);
+            }
+            // 处理按钮点击事件
+            if (isMouseOnButton(goon, msg.x, msg.y) && msg.uMsg == WM_LBUTTONUP) {
+                cleardevice();
+                running = false; // 返回主菜单
+            }
+            // 重置按钮状态
+            goon.isDown = false;
+            goon.isHover = false;
+        }
+    }
+}
+
+// suspendface: 暂停界面，支持后续扩展
+void suspendface(int Bktype, int Buttontype, IMAGE& snapshot) {
+    // 使用传入的屏幕快照绘制暂停前的界面
+    putimage(0, 0, &snapshot);
+
+    // 绘制暂停界面
+    IMAGE pause;
+    Button goon;
+
+    if (Buttontype == 1) {
+        loadimage(&pause, "gamefilepics\\rule1.png", 454, 454);
+        putimage(22, 199, &pause);
+        initButton(goon, "gamefilepics\\button\\continue1.png",
+            "gamefilepics\\button\\continue1.png",
+            "gamefilepics\\button\\continue1.png",
+            270, 450, 184, 47);
+    }
+    else {
+        loadimage(&pause, "gamefilepics\\rule0.png", 454, 454);
+        putimage(22, 199, &pause);
+        initButton(goon, "gamefilepics\\button\\continue0.png",
+            "gamefilepics\\button\\continue0.png",
+            "gamefilepics\\button\\continue0.png",
+            270, 450, 184, 47);
+    }
+
+    // 暂停界面消息循环
     MOUSEMSG msg{};
     bool running = true;
+
+    while (running) {
+        drawButton(goon); // 绘制按钮
+        msg = GetMouseMsg();
+        updateButtonState(goon, msg); // 更新按钮状态
+
+        if (isMouseOnButton(goon, msg.x, msg.y) && msg.uMsg == WM_LBUTTONUP) {
+            running = false; // 退出暂停界面
+        }
+    }
+
+    // 暂停结束时不会清屏，界面恢复由调用方负责
+}
+
+// play: 支持暂停后完全恢复界面
+
+
+void play(int Bktype, int Buttontype) {
+    cleardevice(); // 清屏，准备绘制游戏画面
+    printscreen(Bktype); // 绘制背景
+    setlinecolor(RED);
+    rectangle(22, 199, 476, 653);
+
+    // 初始化按钮
+    Button back, suspend;
+    initButton(back, "gamefilepics\\back.png", "\gamefilepics\\back.png", "\gamefilepics\\back.png", 0, 0, 50, 50);
+    initButton(suspend, "gamefilepics\\button\\suspend.png", "gamefilepics\\button\\suspend.png", "gamefilepics\\button\\suspend.png", 448, 0, 50, 50);
+
+    MOUSEMSG msg{};
+    bool running = true;
+
     while (running) {
         drawButton(back);
-        while (msg.uMsg != WM_LBUTTONUP) {
-            msg = GetMouseMsg();
-            updateButtonState(back, msg);
-        }
-        // 处理按钮点击事件
+        drawButton(suspend);
+
+        msg = GetMouseMsg();
+        updateButtonState(back, msg);
+        updateButtonState(suspend, msg);
+
+        // 返回主菜单
         if (isMouseOnButton(back, msg.x, msg.y) && msg.uMsg == WM_LBUTTONUP) {
             cleardevice();
-            running = false; // 返回主菜单
+            running = false;
         }
+
+        // 暂停界面逻辑
+        if (isMouseOnButton(suspend, msg.x, msg.y) && msg.uMsg == WM_LBUTTONUP) {
+            // 保存当前屏幕内容
+            IMAGE snapshot;
+            getimage(&snapshot, 0, 0, getwidth(), getheight()); // 保存屏幕快照
+
+            suspendface(Bktype, Buttontype, snapshot); // 进入暂停界面
+
+            // 暂停后恢复屏幕快照
+            putimage(0, 0, &snapshot);
+
+            // 重新绘制界面，刷新动态内容（如按钮）
+            drawButton(back);
+            drawButton(suspend);
+        }
+
         // 重置按钮状态
         back.isDown = false;
         back.isHover = false;
+        suspend.isDown = false;
+        suspend.isHover = false;
     }
 }
+
 
 
 //为何button有两种？为适配校园不同的颜色，利好眼睛，注意游戏内容函数需要写两遍，分别用于两个Buttontype。
@@ -290,13 +425,27 @@ void menu() {
                 //注意！！！！
                 //注意！！！！此处为音乐部分对应操作处
                 else if (i == 0) { // Start game button
-                    play(&Bktype);
+                    play(Bktype,Buttontype);
                 }
             }
         }
     }
 }
 int main() {
+    initgraph(498, 810);
+    screen0();
+    menu();
+    closegraph();
+    return 0;
+}
+
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+    //在引入了windows.h头文件，并修改编译方式的链接器为windows（窗口界面）后
+    //main函数的参数列表可以改为WinMain函数的参数列表
+    // 隐藏命令行窗口
+    HWND hwnd = GetConsoleWindow();
+    ShowWindow(hwnd, SW_HIDE);
+    //主程序
     initgraph(498, 810);
     screen0();
     menu();
