@@ -1,11 +1,6 @@
-#define _CRT_SECURE_NO_WARNINGS
-#include<stdio.h>
-#include<stdlib.h>
-#include<math.h>
-#include<string.h>
 //默认0，1，2，3，4代指nx南校，bx,北校，dx东校，zh珠海，sz深圳
 //注意button结尾，s start, e exchange, x exit, m music.
-
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <graphics.h>
 //定义按钮
@@ -14,10 +9,11 @@ struct Button {
     int x, y, width, height;
     bool isHover, isDown;
 };
-void initButton(Button &btn, const wchar_t *normalPath, const wchar_t *hoverPath, const wchar_t *downPath, int x, int y, int width, int height) {
-    loadimage(&btn.normal, _T("normalPath"), width, height);
-    loadimage(&btn.hover, _T("hoverPath"), width, height);
-    loadimage(&btn.down, _T("downPath"), width, height);
+//定义按钮，三张图片分别为点击前，鼠标在上方，点击后，x,y为坐标
+void initButton(Button& btn, const char* normalPath, const char* hoverPath, const char* downPath, int x, int y, int width, int height) {
+    loadimage(&btn.normal, normalPath, width, height);
+    loadimage(&btn.hover, hoverPath, width, height);
+    loadimage(&btn.down, downPath, width, height);
     btn.x = x;
     btn.y = y;
     btn.width = width;
@@ -68,31 +64,31 @@ void resetButtonStates(Button& startGameButton, Button& changeBkButton, Button& 
 
 void screen0() {
     IMAGE background;
-    loadimage(&background, (_T("gamefilepics/nx0.png")), 498, 810);
+    loadimage(&background, _T("gamefilepics\\nx0.png"), 498, 810);
     putimage(0, 0, &background);
 }
 
 void screen1() {
     IMAGE background;
-    loadimage(&background, (_T("gamefilepics/bx0.png")), 498, 810);
+    loadimage(&background, _T("gamefilepics\\bx0.png"), 498, 810);
     putimage(0, 0, &background);
 }
 
 void screen2() {
     IMAGE background;
-    loadimage(&background, (_T("gamefilepics/dx0.png")), 498, 810);
+    loadimage(&background, _T("gamefilepics\\dx0.png"), 498, 810);
     putimage(0, 0, &background);
 }
 
 void screen3() {
     IMAGE background;
-    loadimage(&background, (_T("gamefilepics/zh0.png")), 498, 810);
+    loadimage(&background, _T("gamefilepics\\zh0.png"), 498, 810);
     putimage(0, 0, &background);
 }
 
 void screen4() {
     IMAGE background;
-    loadimage(&background, (_T("gamefilepics/sz0.png")), 498, 810);
+    loadimage(&background, _T("gamefilepics\\sz0.png"), 498, 810);
     putimage(0, 0, &background);
 }
 //打印屏幕
@@ -120,12 +116,12 @@ int chageBk(int* Bktype, int* Buttontype) {
     cleardevice();
     printscreen(*Bktype);
     Button nx, bx, dx, zh, sz, back;
-    initButton(nx, _T("gamefilepics/button/button nx.png"), _T("gamefilepics/button/button nx.png"), _T("gamefilepics/button/button nx1.png"), 150, 200, 214, 57);
-    initButton(bx, _T("gamefilepics/button/button bx.png"), _T("gamefilepics/button/button bx.png"), _T("gamefilepics/button/button bx1.png"), 150, 300, 214, 57);
-    initButton(dx, _T("gamefilepics/button/button dx.png"), _T("gamefilepics/button/button dx.png"), _T("gamefilepics/button/button dx1.png"), 150, 400, 214, 57);
-    initButton(zh, _T("gamefilepics/button/button zh.png"), _T("gamefilepics/button/button zh.png"), _T("gamefilepics/button/button zh1.png"), 150, 500, 214, 57);
-    initButton(sz, _T("gamefilepics/button/button sz.png"), _T("gamefilepics/button/button sz.png"), _T("gamefilepics/button/button sz1.png"), 150, 600, 214, 57);
-    initButton(back, _T("gamefilepics/back.png"), _T("gamefilepics/back.png"), _T("gamefilepics/back.png"), 0, 0, 50, 50);
+    initButton(nx, "gamefilepics\\button\\button nx.png", "gamefilepics\\button\\button nx.png", "gamefilepics\\button\\button nx1.png", 150, 200, 214, 57);
+    initButton(bx, "gamefilepics\\button\\button bx.png", "gamefilepics\\button\\button bx.png", "gamefilepics\\button\\button bx1.png", 150, 300, 214, 57);
+    initButton(dx, "gamefilepics\\button\\button dx.png", "gamefilepics\\button\\button dx.png", "gamefilepics\\button\\button dx1.png", 150, 400, 214, 57);
+    initButton(zh, "gamefilepics\\button\\button zh.png", "gamefilepics\\button\\button zh.png", "gamefilepics\\button\\button zh1.png", 150, 500, 214, 57);
+    initButton(sz, "gamefilepics\\button\\button sz.png", "gamefilepics\\button\\button sz.png", "gamefilepics\\button\\button sz1.png", 150, 600, 214, 57);
+    initButton(back, "gamefilepics\\back.png", "gamefilepics\\back.png", "gamefilepics\\back.png", 0, 0, 50, 50);
     MOUSEMSG msg{};
     bool running = true;
     while (running) {
@@ -200,7 +196,7 @@ void play(int* Bktype) {
     setlinecolor(RED);
     rectangle(22, 199, 476, 653);
     Button back;
-    initButton(back, _T("gamefilepics/back.png"), _T("gamefilepics/back.png"), _T("gamefilepics/back.png"), 0, 0, 50, 50);
+    initButton(back, "gamefilepics\\back.png", "gamefilepics\\back.png", "gamefilepics\\back.png", 0, 0, 50, 50);
     MOUSEMSG msg{};
     bool running = true;
     while (running) {
@@ -225,15 +221,15 @@ void play(int* Bktype) {
 void menu() {
     Button startGameButton, changeBkButton, playMusicButton, quitGameButton;
     Button startGameButton1, changeBkButton1, playMusicButton1, quitGameButton1;
-    initButton(startGameButton, _T("gamefilepics/button/button browns 0.png"), _T("gamefilepics/button/button browns 1.png"), _T("gamefilepics/button/button browns 2.png"), 150, 300, 214, 57);
-    initButton(changeBkButton, _T("gamefilepics/button/button browne 0.png"), _T("gamefilepics/button/button browne 1.png"), _T("gamefilepics/button/button browne 2.png"), 150, 400, 214, 57);
-    initButton(playMusicButton, _T("gamefilepics/button/button brownm 0.png"), _T("gamefilepics/button/button brownm 1.png"), _T("gamefilepics/button/button brownm 2.png"), 150, 500, 214, 57);
-    initButton(quitGameButton, _T("gamefilepics/button/button brownx 0.png"), _T("gamefilepics/button/button brownx 1.png"), _T("gamefilepics/button/button brownx 2.png"), 150, 600, 214, 57);
+    initButton(startGameButton, "gamefilepics\\button\\button browns 0.png", "gamefilepics\\button\\button browns 1.png", "gamefilepics\\button\\button browns 2.png", 150, 300, 214, 57);
+    initButton(changeBkButton, "gamefilepics\\button\\button browne 0.png", "gamefilepics\\button\\button browne 1.png", "gamefilepics\\button\\button browne 2.png", 150, 400, 214, 57);
+    initButton(playMusicButton, "gamefilepics\\button\\button brownm 0.png", "gamefilepics\\button\\button brownm 1.png", "gamefilepics\\button\\button brownm 2.png", 150, 500, 214, 57);
+    initButton(quitGameButton, "gamefilepics\\button\\button brownx 0.png", "gamefilepics\\button\\button brownx 1.png", "gamefilepics\\button\\button brownx 2.png", 150, 600, 214, 57);
 
-    initButton(startGameButton1, _T("gamefilepics/button/button blues 0.png"), _T("gamefilepics/button/button blues 1.png"), _T("gamefilepics/button/button blues 2.png"), 150, 300, 214, 57);
-    initButton(changeBkButton1, _T("gamefilepics/button/button bluee 0.png"), _T("gamefilepics/button/button bluee 1.png"), _T("gamefilepics/button/button bluee 2.png"), 150, 400, 214, 57);
-    initButton(playMusicButton1, _T("gamefilepics/button/button bluem 0.png"), _T("gamefilepics/button/button bluem 1.png"), _T("gamefilepics/button/button bluem 2.png"), 150, 500, 214, 57);
-    initButton(quitGameButton1, _T("gamefilepics/button/button bluex 0.png"), _T("gamefilepics/button/button bluex 1.png"), _T("gamefilepics/button/button bluex 2.png"), 150, 600, 214, 57);
+    initButton(startGameButton1, "gamefilepics\\button\\button blues 0.png", "gamefilepics\\button\\button blues 1.png", "gamefilepics\\button\\button blues 2.png", 150, 300, 214, 57);
+    initButton(changeBkButton1, "gamefilepics\\button\\button bluee 0.png", "gamefilepics\\button\\button bluee 1.png", "gamefilepics\\button\\button bluee 2.png", 150, 400, 214, 57);
+    initButton(playMusicButton1, "gamefilepics\\button\\button bluem 0.png", "gamefilepics\\button\\button bluem 1.png", "gamefilepics\\button\\button bluem 2.png", 150, 500, 214, 57);
+    initButton(quitGameButton1, "gamefilepics\\button\\button bluex 0.png", "gamefilepics\\button\\button bluex 1.png", "gamefilepics\\button\\button bluex 2.png", 150, 600, 214, 57);
     int Bktype = 0;
     int Buttontype = 0;
     MOUSEMSG msg{};
@@ -307,6 +303,3 @@ int main() {
     closegraph();
     return 0;
 }
-
-
-
