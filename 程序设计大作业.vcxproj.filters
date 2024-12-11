@@ -18,9 +18,6 @@
     <ClCompile Include="picture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="2.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="1.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
