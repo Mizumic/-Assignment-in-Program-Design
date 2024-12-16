@@ -4,6 +4,7 @@
 #include<windows.h>
 #include <iostream>
 #include <graphics.h>
+
 char GetChar()//输入一个字符（非空格、非回车、ASCII码大于零）
 {
     char c;
@@ -61,13 +62,13 @@ void updateButtonState(Button& btn, MOUSEMSG& msg) {
     }
 }
 //重置按钮状态
-void resetButtonStates(Button& startGameButton, Button& changeBkButton, Button& playMusicButton, Button& quitGameButton) {
+void resetButtonStates(Button& startGameButton, Button& changeBkButton, Button& showRuleButton, Button& quitGameButton) {
     startGameButton.isHover = false;
     startGameButton.isDown = false;
     changeBkButton.isHover = false;
     changeBkButton.isDown = false;
-    playMusicButton.isHover = false;
-    playMusicButton.isDown = false;
+    showRuleButton.isHover = false;
+    showRuleButton.isDown = false;
     quitGameButton.isHover = false;
     quitGameButton.isDown = false;
 }
@@ -194,11 +195,6 @@ int chageBk(int* Bktype, int* Buttontype) {
     }
     return 0;
 }
-//注意！！！！！此处音乐函数尚未完成
-void playMusic() {
-
-}
-
 
 void preface(int Bktype, int Buttontype) {
     cleardevice();
@@ -354,16 +350,16 @@ void play(int Bktype, int Buttontype) {
 
 //为何button有两种？为适配校园不同的颜色，利好眼睛，注意游戏内容函数需要写两遍，分别用于两个Buttontype。
 void menu() {
-    Button startGameButton, changeBkButton, playMusicButton, quitGameButton;
-    Button startGameButton1, changeBkButton1, playMusicButton1, quitGameButton1;
+    Button startGameButton, changeBkButton, showRuleButton, quitGameButton;
+    Button startGameButton1, changeBkButton1, showRuleButton1, quitGameButton1;
     initButton(startGameButton, "gamefilepics\\button\\button browns 0.png", "gamefilepics\\button\\button browns 1.png", "gamefilepics\\button\\button browns 2.png", 150, 300, 214, 57);
     initButton(changeBkButton, "gamefilepics\\button\\button browne 0.png", "gamefilepics\\button\\button browne 1.png", "gamefilepics\\button\\button browne 2.png", 150, 400, 214, 57);
-    initButton(playMusicButton, "gamefilepics\\button\\button brownm 0.png", "gamefilepics\\button\\button brownm 1.png", "gamefilepics\\button\\button brownm 2.png", 150, 500, 214, 57);
+    initButton(showRuleButton, "gamefilepics\\button\\button brownr 0.png", "gamefilepics\\button\\button brownr 1.png", "gamefilepics\\button\\button brownr 2.png", 150, 500, 214, 57);
     initButton(quitGameButton, "gamefilepics\\button\\button brownx 0.png", "gamefilepics\\button\\button brownx 1.png", "gamefilepics\\button\\button brownx 2.png", 150, 600, 214, 57);
 
     initButton(startGameButton1, "gamefilepics\\button\\button blues 0.png", "gamefilepics\\button\\button blues 1.png", "gamefilepics\\button\\button blues 2.png", 150, 300, 214, 57);
     initButton(changeBkButton1, "gamefilepics\\button\\button bluee 0.png", "gamefilepics\\button\\button bluee 1.png", "gamefilepics\\button\\button bluee 2.png", 150, 400, 214, 57);
-    initButton(playMusicButton1, "gamefilepics\\button\\button bluem 0.png", "gamefilepics\\button\\button bluem 1.png", "gamefilepics\\button\\button bluem 2.png", 150, 500, 214, 57);
+    initButton(showRuleButton1, "gamefilepics\\button\\button bluer 0.png", "gamefilepics\\button\\button bluer 1.png", "gamefilepics\\button\\button bluer 2.png", 150, 500, 214, 57);
     initButton(quitGameButton1, "gamefilepics\\button\\button bluex 0.png", "gamefilepics\\button\\button bluex 1.png", "gamefilepics\\button\\button bluex 2.png", 150, 600, 214, 57);
     int Bktype = 0;
     int Buttontype = 0;
@@ -374,21 +370,21 @@ void menu() {
         printscreen(Bktype); // 绘制背景
 
         // 重置按钮状态应该在每次循环开始时进行
-        resetButtonStates(startGameButton, changeBkButton, playMusicButton, quitGameButton);
-        resetButtonStates(startGameButton1, changeBkButton1, playMusicButton1, quitGameButton1);
+        resetButtonStates(startGameButton, changeBkButton, showRuleButton, quitGameButton);
+        resetButtonStates(startGameButton1, changeBkButton1, showRuleButton1, quitGameButton1);
 
         // 绘制按钮
         Button* buttons[4];
         if (Buttontype == 0) {
             buttons[0] = &startGameButton;
             buttons[1] = &changeBkButton;
-            buttons[2] = &playMusicButton;
+            buttons[2] = &showRuleButton;
             buttons[3] = &quitGameButton;
         }
         else if (Buttontype == 1) {
             buttons[0] = &startGameButton1;
             buttons[1] = &changeBkButton1;
-            buttons[2] = &playMusicButton1;
+            buttons[2] = &showRuleButton1;
             buttons[3] = &quitGameButton1;
         }
 
@@ -417,7 +413,10 @@ void menu() {
                 //注意！！！！
                 //注意！！！！此处为音乐部分对应操作处
                 else if (i == 2) { // Play music button
-                    playMusic();
+                    IMAGE snapshot;
+                    getimage(&snapshot, 0, 0, getwidth(), getheight());
+                    suspendface(Bktype, Buttontype, snapshot);
+                    putimage(0, 0, &snapshot);
                 }
                 else if (i == 3) { // Quit game button
                     running = false;
@@ -430,25 +429,4 @@ void menu() {
             }
         }
     }
-}
-int main() {
-    initgraph(498, 810);
-    screen0();
-    menu();
-    closegraph();
-    return 0;
-}
-
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
-    //在引入了windows.h头文件，并修改编译方式的链接器为windows（窗口界面）后
-    //main函数的参数列表可以改为WinMain函数的参数列表
-    // 隐藏命令行窗口
-    HWND hwnd = GetConsoleWindow();
-    ShowWindow(hwnd, SW_HIDE);
-    //主程序
-    initgraph(498, 810);
-    screen0();
-    menu();
-    closegraph();
-    return 0;
 }
