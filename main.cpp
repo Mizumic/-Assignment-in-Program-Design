@@ -12,7 +12,7 @@ DWORD WINAPI MusicThread(LPVOID lpParam);
 DWORD WINAPI ScreenAndMenuThread(LPVOID lpParam);
 DWORD WINAPI GameThread(LPVOID lpParam);
 //int game();
-extern bool GameStart;
+extern int GameEnd;
 
 int main() {
     HANDLE hMusicThread, hScreenAndMenuThread,hGameThread;
@@ -69,8 +69,6 @@ int main() {
     }
 
     // 等待线程完成
-    WaitForSingleObject(hMusicThread, INFINITE);
-    WaitForSingleObject(hScreenAndMenuThread, INFINITE);
     WaitForSingleObject(hGameThread, INFINITE);
 
     // 关闭线程句柄
@@ -98,8 +96,14 @@ DWORD WINAPI ScreenAndMenuThread(LPVOID lpParam) {
 }
 
 DWORD WINAPI GameThread(LPVOID lpParam) {
-    printf("Nothing here");
-	return 0;
+    printf("Test\n");
+    while (1)
+    { 
+        if (GameEnd)
+        {
+            return 0;
+        }
+    }
 }
 
 

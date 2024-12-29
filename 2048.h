@@ -30,6 +30,7 @@ int num[12] = { 0,2,4,8,16,32,64,128,256,512,1024,2048 };
 int gamemap[MAX_GRID][MAX_GRID];//全局变量自动化为0,map数组用于存储各个格子里的值
 POINT pos[MAX_GRID][MAX_GRID];//结构体保存每个格子左上角的坐标
 bool flag = false;
+int GameEnd=0;
 
 //定义函数，随机返回2/4
 int twoOrFour()
@@ -118,18 +119,18 @@ void GameDraw() {
     }
     setfillcolor(back);//使用背景色
     solidrectangle(250, 0, 446, 25);
-    solidrectangle(250, 25, 446, 50);
+    //solidrectangle(250, 25, 446, 50);
 
     char scoreText[20];
     sprintf_s(scoreText, "Score:%d", score);
     settextstyle(24, 0, "Consolas");
     settextcolor(WHITE);//设置文本颜色
     outtextxy(260, 0, scoreText);
-    char highScoreText[20];
+    //char highScoreText[20];
     //sprintf_s(highScoreText, "Highest Score:%d", highScore);
-    settextstyle(20, 0, "Consolas");
-    settextcolor(WHITE);//设置文本颜色
-    outtextxy(260, 25, highScoreText);
+    //settextstyle(20, 0, "Consolas");
+    //settextcolor(WHITE);//设置文本颜色
+    //outtextxy(260, 25, highScoreText);
 }
 
 //上移
@@ -155,6 +156,7 @@ void MoveUp() {
         for (x = 0; x < MAX_GRID - 1; x++) {
             if (gamemap[x][y] == gamemap[x + 1][y]) 
             { // 如果和下一个格子数值相同，就合并
+                score += gamemap[x][y] * 2;//将合并的数值加到分数上
                 gamemap[x][y] *= 2; // 自身乘二
                 gamemap[x + 1][y] = 0; // 被吸收为0
                 for (int k = x + 1; k < MAX_GRID - 1; k++) { // 从这一格向后遍历，将之后的数字上移
@@ -187,7 +189,9 @@ void MoveDown() {
     for (int y = 0; y < MAX_GRID; y++) { // 只需要考虑某一列的情况即可
         int x;
         for (x = MAX_GRID - 1; x > 0; x--) {
-            if (gamemap[x][y] == gamemap[x - 1][y]) { // 如果和上一个格子数值相同，就合并
+            if (gamemap[x][y] == gamemap[x - 1][y]) 
+            { // 如果和上一个格子数值相同，就合并
+                score += gamemap[x][y] * 2;//将合并的数值加到分数上
                 gamemap[x][y] *= 2; // 自身乘二
                 gamemap[x - 1][y] = 0; // 被吸收为0
                 for (int k = x - 1; k > 0; k--) { // 从这一格向前遍历，将之前的数字下移
@@ -220,7 +224,9 @@ void MoveLeft() {
     for (int x = 0; x < MAX_GRID; x++) { // 只需要考虑某一行的情况即可
         int y;
         for (y = 0; y < MAX_GRID - 1; y++) {
-            if (gamemap[x][y] == gamemap[x][y + 1]) { // 如果和下一个格子数值相同，就合并
+            if (gamemap[x][y] == gamemap[x][y + 1]) 
+            { // 如果和下一个格子数值相同，就合并
+                score += gamemap[x][y] * 2;//将合并的数值加到分数上
                 gamemap[x][y] *= 2; // 自身乘二
                 gamemap[x][y + 1] = 0; // 被吸收为0
                 for (int k = y + 1; k < MAX_GRID - 1; k++) { // 从这一格向后遍历，将之后的数字左移
@@ -253,7 +259,9 @@ void MoveRight() {
     for (int x = 0; x < MAX_GRID; x++) { // 只需要考虑某一行的情况即可
         int y;
         for (y = MAX_GRID - 1; y > 0; y--) {
-            if (gamemap[x][y] == gamemap[x][y - 1]) { // 如果和前一个格子数值相同，就合并
+            if (gamemap[x][y] == gamemap[x][y - 1]) 
+            { // 如果和前一个格子数值相同，就合并
+                score += gamemap[x][y] * 2;//将合并的数值加到分数上
                 gamemap[x][y] *= 2; // 自身乘二
                 gamemap[x][y - 1] = 0; // 被吸收为0
                 for (int k = y - 1; k > 0; k--) { // 从这一格向前遍历，将之前的数字右移
@@ -266,9 +274,68 @@ void MoveRight() {
     flag = 1;
 }
 
+int checkGrid() {
+    for (int i = 0; i < MAX_GRID; i++)
+    {
+        for (int j = 0; j < MAX_GRID; j++)
+        {
+            if (gamemap[i][j] == 2048)
+            {
+                return 1; // 胜利
+            }
+        }
+    }
+    for (int i = 0; i < MAX_GRID; i++)
+    {
+        for (int j = 0; j < MAX_GRID; j++)
+        {
+            if (gamemap[i][j] == 0)
+            {
+                return 0; // 游戏继续
+            }
+        }
+    }
+
+    for (int row = 0; row < MAX_GRID; row++) {
+        for (int col = 0; col < MAX_GRID; col++) {
+            int currentValue = gamemap[row][col];
+            int isDifferent = 1;
+
+            if (row > 0 && gamemap[row - 1][col] == currentValue) {
+                isDifferent = 0;
+            }
+            if (row < MAX_GRID - 1 && gamemap[row + 1][col] == currentValue) {
+                isDifferent = 0;
+            }
+            if (col > 0 && gamemap[row][col - 1] == currentValue) {
+                isDifferent = 0;
+            }
+            if (col < MAX_GRID - 1 && gamemap[row][col + 1] == currentValue) {
+                isDifferent = 0;
+            }
+
+            if (isDifferent) {
+                return -1; // 游戏结束
+            }
+        }
+    }
+
+    return 0; //正常
+}
 
 void GameJudge()
 {
+    int check = checkGrid();
+    if (check == -1)
+    {
+        printf("lose");
+        GameEnd = 1;
+    }
+    if (check == 1)
+    {
+        printf("win");
+        GameEnd = 1;
+    }
     if (flag)
     {
         CreateNumber();
