@@ -27,9 +27,10 @@ enum Color {
 
 Color arr[13] = { zero,twoTo1,twoTo2,twoTo3,twoTo4,twoTo5,twoTo6,twoTo7,twoTo8,twoTo9,twoTo10,twoTo11,back };//设置颜色数组
 int num[12] = { 0,2,4,8,16,32,64,128,256,512,1024,2048 };
-int map[MAX_GRID][MAX_GRID];//全局变量自动化为0,map数组用于存储各个格子里的值
+int gamemap[MAX_GRID][MAX_GRID];//全局变量自动化为0,map数组用于存储各个格子里的值
 POINT pos[MAX_GRID][MAX_GRID];//结构体保存每个格子左上角的坐标
 bool flag = false;
+
 //定义函数，随机返回2/4
 int twoOrFour()
 {
@@ -49,9 +50,9 @@ void CreateNumber()
         //确保生成的随机数要在数为0的框内
         int x = rand() % MAX_GRID;
         int y = rand() % MAX_GRID;
-        if (map[x][y] == 0)
+        if (gamemap[x][y] == 0)
         {
-            map[x][y] = twoOrFour();
+            gamemap[x][y] = twoOrFour();
             break;
         }
     }
@@ -98,15 +99,15 @@ void GameDraw() {
     for (int i = 0; i < MAX_GRID; i++) {
         for (int k = 0; k < MAX_GRID; k++) {
             for (int q = 0; q < 12; q++) {
-                if (map[i][k] == num[q]) {
+                if (gamemap[i][k] == num[q]) {
                     setfillcolor(arr[q]);
                     solidrectangle(pos[i][k].x, pos[i][k].y, pos[i][k].x + GRID_WIDTH, pos[i][k].y + GRID_HEIGHT);
-                    if (map[i][k] != 0) {
+                    if (gamemap[i][k] != 0) {
                         char number[5] = " ";
                         settextcolor(BLACK);
                         settextstyle(30, 0, "Consolas");
                         setbkmode(TRANSPARENT);
-                        sprintf_s(number, "%d", map[i][k]);
+                        sprintf_s(number, "%d", gamemap[i][k]);
                         int tempx = GRID_WIDTH / 2 - textwidth(number) / 2;
                         int tempy = GRID_HEIGHT / 2 - textheight(number) / 2;
                         outtextxy(pos[i][k].x + tempx, pos[i][k].y + tempy, number);
@@ -125,160 +126,147 @@ void GameDraw() {
     settextcolor(WHITE);//设置文本颜色
     outtextxy(260, 0, scoreText);
     char highScoreText[20];
-    sprintf_s(highScoreText, "Highest Score:%d", highScore);
+    //sprintf_s(highScoreText, "Highest Score:%d", highScore);
     settextstyle(20, 0, "Consolas");
     settextcolor(WHITE);//设置文本颜色
     outtextxy(260, 25, highScoreText);
 }
 
-
-
-
-
-
-
 //上移
-void moveup()
-{
-    for (int i = 0; i < MAX_GRID; i++)
-    {
-        int temp = 0;
-        for (int begin = 1; begin < MAX_GRID; begin++)
-        {
-            if (map[begin][i] != 0)
-            {
-                if (map[temp][i] == 0)
-                {
-                    map[temp][i] = map[begin][i];
-                    map[begin][i] = 0;//对纵列进行变化
+void MoveUp() {
+    for (int y = 0; y < MAX_GRID; y++) {
+        for (int x = 1; x < MAX_GRID; x++) {
+            if (gamemap[x][y] != 0) {
+                int targetX = x;
+                while (targetX > 0 && gamemap[targetX - 1][y] == 0) {
+                    targetX--;
                 }
-                else if (map[temp][i] == map[begin][i])
-                {
-                    updateScore(map[temp][i] * 2);//更新分数
-                    map[temp][i] += map[begin][i];
-                    map[begin][i] = 0;
+                if (targetX != x) {
+                    gamemap[targetX][y] = gamemap[x][y];
+                    gamemap[x][y] = 0;
                 }
-                else
-                {
-                    map[temp + 1][i] = map[begin][i];
-                    if (temp + 1 != begin)
-                    {
-                        map[begin][i] = 0;
-                    }
+            }
+        }
+    }
 
+    // 接下来进行合并
+    for (int y = 0; y < MAX_GRID; y++) { // 只需要考虑某一列的情况即可
+        int x;
+        for (x = 0; x < MAX_GRID - 1; x++) {
+            if (gamemap[x][y] == gamemap[x + 1][y]) 
+            { // 如果和下一个格子数值相同，就合并
+                gamemap[x][y] *= 2; // 自身乘二
+                gamemap[x + 1][y] = 0; // 被吸收为0
+                for (int k = x + 1; k < MAX_GRID - 1; k++) { // 从这一格向后遍历，将之后的数字上移
+                    gamemap[k][y] = gamemap[k + 1][y];
                 }
-                temp++;
-                flag = true;
+                gamemap[MAX_GRID - 1][y] = 0; // 将最后一格设置为0
+            }
+        }
+    }
+    flag = 1;
+}
 
+void MoveDown() {
+    for (int y = 0; y < MAX_GRID; y++) {
+        for (int x = MAX_GRID - 2; x >= 0; x--) {
+            if (gamemap[x][y] != 0) {
+                int targetX = x;
+                while (targetX < MAX_GRID - 1 && gamemap[targetX + 1][y] == 0) {
+                    targetX++;
+                }
+                if (targetX != x) {
+                    gamemap[targetX][y] = gamemap[x][y];
+                    gamemap[x][y] = 0;
+                }
             }
         }
+    }
 
-    }
-}
-//下移
-void movedown()
-{
-    for (int i = MAX_GRID - 1; i >= 0; i--)
-    {
-        int temp = MAX_GRID - 1;
-        for (int begin = MAX_GRID - 2; begin >= 0; begin--)
-        {
-            if (map[begin][i] != 0)
-            {
-                if (map[temp][i] == 0)
-                {
-                    map[temp][i] = map[begin][i];
-                    map[begin][i] = 0;
+    // 接下来进行合并
+    for (int y = 0; y < MAX_GRID; y++) { // 只需要考虑某一列的情况即可
+        int x;
+        for (x = MAX_GRID - 1; x > 0; x--) {
+            if (gamemap[x][y] == gamemap[x - 1][y]) { // 如果和上一个格子数值相同，就合并
+                gamemap[x][y] *= 2; // 自身乘二
+                gamemap[x - 1][y] = 0; // 被吸收为0
+                for (int k = x - 1; k > 0; k--) { // 从这一格向前遍历，将之前的数字下移
+                    gamemap[k][y] = gamemap[k - 1][y];
                 }
-                else if (map[temp][i] == map[begin][i])
-                {
-                    updateScore(map[temp][i] * 2);//更新分数
-                    map[temp][i] += map[begin][i];
-                    map[begin][i] = 0;
-                }
-                else
-                {
-                    map[temp - 1][i] = map[begin][i];
-                    if (temp - 1 != begin)
-                    {
-                        map[begin][i] = 0;
-                    }
-                }
-                temp--;
-                flag = true;
+                gamemap[0][y] = 0; // 将第一格设置为0
             }
         }
     }
+    flag = 1;
 }
-// 左移
-void moveleft()
-{
-    for (int i = 0; i < MAX_GRID; i++)
-    {
-        int temp = 0;
-        for (int begin = 1; begin < MAX_GRID; begin++)
-        {
-            if (map[i][begin] != 0)
-            {
-                if (map[i][temp] == 0)
-                {
-                    map[i][temp] = map[i][begin];
-                    map[i][begin] = 0;
+
+void MoveLeft() {
+    for (int x = 0; x < MAX_GRID; x++) {
+        for (int y = 1; y < MAX_GRID; y++) {
+            if (gamemap[x][y] != 0) {
+                int targetY = y;
+                while (targetY > 0 && gamemap[x][targetY - 1] == 0) {
+                    targetY--;
                 }
-                else if (map[i][temp] == map[i][begin])
-                {
-                    updateScore(map[i][begin] * 2);//更新分数
-                    map[i][temp] += map[i][begin];
-                    map[i][begin] = 0;
+                if (targetY != y) {
+                    gamemap[x][targetY] = gamemap[x][y];
+                    gamemap[x][y] = 0;
                 }
-                else
-                {
-                    map[i][temp + 1] = map[i][begin];
-                    if (temp + 1 != begin)
-                    {
-                        map[i][begin] = 0;
-                    }
-                }
-                temp++;
-                flag = true;
             }
         }
     }
-}
-void moveright()
-{
-    for (int i = 0; i < MAX_GRID; i++)
-    {
-        int temp = MAX_GRID - 1;
-        for (int begin = MAX_GRID - 2; begin >= 0; begin--)
-        {
-            if (map[i][begin] != 0)
-            {
-                if (map[i][temp] == 0)
-                {
-                    map[i][temp] = map[i][begin];
-                    map[i][begin] = 0;
+
+    // 接下来进行合并
+    for (int x = 0; x < MAX_GRID; x++) { // 只需要考虑某一行的情况即可
+        int y;
+        for (y = 0; y < MAX_GRID - 1; y++) {
+            if (gamemap[x][y] == gamemap[x][y + 1]) { // 如果和下一个格子数值相同，就合并
+                gamemap[x][y] *= 2; // 自身乘二
+                gamemap[x][y + 1] = 0; // 被吸收为0
+                for (int k = y + 1; k < MAX_GRID - 1; k++) { // 从这一格向后遍历，将之后的数字左移
+                    gamemap[x][k] = gamemap[x][k + 1];
                 }
-                else if (map[i][temp] == map[i][begin])
-                {
-                    updateScore(map[i][begin] * 2);//更新分数
-                    map[i][temp] += map[i][begin];
-                    map[i][begin] = 0;
-                }
-                else
-                {
-                    map[i][temp - 1] = map[i][begin];
-                    if (temp - 1 != begin)
-                    {
-                        map[i][begin] = 0;
-                    }
-                }
-                temp--;
-                flag = true;
+                gamemap[x][MAX_GRID - 1] = 0; // 将最后一格设置为0
             }
         }
     }
+    flag = 1;
 }
+
+void MoveRight() {
+    for (int x = 0; x < MAX_GRID; x++) {
+        for (int y = MAX_GRID - 2; y >= 0; y--) {
+            if (gamemap[x][y] != 0) {
+                int targetY = y;
+                while (targetY < MAX_GRID - 1 && gamemap[x][targetY + 1] == 0) {
+                    targetY++;
+                }
+                if (targetY != y) {
+                    gamemap[x][targetY] = gamemap[x][y];
+                    gamemap[x][y] = 0;
+                }
+            }
+        }
+    }
+
+    // 接下来进行合并
+    for (int x = 0; x < MAX_GRID; x++) { // 只需要考虑某一行的情况即可
+        int y;
+        for (y = MAX_GRID - 1; y > 0; y--) {
+            if (gamemap[x][y] == gamemap[x][y - 1]) { // 如果和前一个格子数值相同，就合并
+                gamemap[x][y] *= 2; // 自身乘二
+                gamemap[x][y - 1] = 0; // 被吸收为0
+                for (int k = y - 1; k > 0; k--) { // 从这一格向前遍历，将之前的数字右移
+                    gamemap[x][k] = gamemap[x][k - 1];
+                }
+                gamemap[x][0] = 0; // 将第一格设置为0
+            }
+        }
+    }
+    flag = 1;
+}
+
+
 void GameJudge()
 {
     if (flag)
@@ -297,22 +285,26 @@ void GameControl()
     case'w':
     case'W':
     case 72:
-        moveup();
+        printf("up\n");
+        MoveUp();
         break;
     case's':
     case'S':
     case 80:
-        movedown();
+        printf("down\n");
+        MoveDown();
         break;
     case 'a':
     case'A':
     case 75:
-        moveleft();
+        printf("left\n");
+        MoveLeft();
         break;
     case'd':
     case'D':
     case 77:
-        moveright();
+        printf("right\n");
+        MoveRight();
         break;
     }
 }

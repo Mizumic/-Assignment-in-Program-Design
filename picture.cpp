@@ -4,7 +4,7 @@
 #include<windows.h>
 #include <bits/stdc++.h>
 #include <iostream>
-#include <graphics.h>、
+#include <graphics.h>
 #include <conio.h> // 用于_getch()函数
 #include <cstdlib>
 #include <ctime>
@@ -13,6 +13,7 @@
 #include <graphics.h>
 #pragma comment( lib, "MSIMG32.LIB")
 
+bool GameStart;
 IMAGE imageBuffer;
 
 void transparentimage1(IMAGE img,int x, int y) {
@@ -505,7 +506,8 @@ void menu() {
             if (isMouseOnButton(*buttons[i], msg.x, msg.y) && msg.uMsg == WM_LBUTTONUP) {
                 if (i == 0) { // Start game button
                     preface(Bktype, Buttontype, background); // 传递背景图像
-                    play(Bktype, Buttontype, background); // 传递背景图像
+                    GameStart = 1;
+                    play(Bktype, Buttontype, background);
                 }
                 else if (i == 1) { // Change background button
                     chageBk(&Bktype, &Buttontype);
@@ -518,9 +520,6 @@ void menu() {
                 }
                 else if (i == 3) { // Quit game button
                     running = false;
-                }
-                else if (i == 0) { // Start game button
-                    play(Bktype, Buttontype, background);
                 }
             }
         }
