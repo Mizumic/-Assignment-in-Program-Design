@@ -287,24 +287,38 @@ void GameJudge()
         flag = false;
     }
 }
-//实现键盘控制
-void GameControl() {
-    while (true) {
-        if (GetAsyncKeyState('W') & 0x8000 || GetAsyncKeyState(VK_UP) & 0x8000) {
-        moveup();
-            Sleep(100); // 防止重复触发
+const char* CLASS_NAME = "GameControlWindow";
+
+
+LRESULT CALLBACK GameControl(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+    switch (msg) {
+    case WM_KEYDOWN:
+        switch (wParam) {
+        case 'W':
+        case 'w':
+        case VK_UP:
+            moveup();
+            break;
+        case 'S':
+        case 's':
+        case VK_DOWN:
+            movedown();
+            break;
+        case 'A':
+        case 'a':
+        case VK_LEFT:
+            moveleft();
+            break;
+        case 'D':
+        case 'd':
+        case VK_RIGHT:
+            moveright();
+            break;
         }
-        else if (GetAsyncKeyState('S') & 0x8000 || GetAsyncKeyState(VK_DOWN) & 0x8000) {
-        movedown();
-            Sleep(100); // 防止重复触发
-        }
-        else if (GetAsyncKeyState('A') & 0x8000 || GetAsyncKeyState(VK_LEFT) & 0x8000) {
-        moveleft();
-            Sleep(100); // 防止重复触发
-        }
-        else if (GetAsyncKeyState('D') & 0x8000 || GetAsyncKeyState(VK_RIGHT) & 0x8000) {
-        moveright();
-            Sleep(100); // 防止重复触发
-        }
+        break;
+    default:
+        return DefWindowProc(hwnd, msg, wParam, lParam);
     }
+    return 0;
 }
+
