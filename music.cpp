@@ -83,7 +83,7 @@ void setAnimationSpeed(Settings* settings, float speed) {
 	}
 }
 
-int main() {
+int Music() {
 	Settings settings;
 	const char* bgmFiles[] = { "Music\\1.mp3", "Music\\2.mp3", "Music\\3.mp3", "Music\\4.mp3" }; // 使用相对路径
 
@@ -105,6 +105,5 @@ int main() {
 		}
 	} while (mciSendString("status bgm mode", NULL, 0, NULL) != 0); // 检查是否还有音乐在播放
 	stopMusic(); // 停止音乐
-
 	return 0;
 }

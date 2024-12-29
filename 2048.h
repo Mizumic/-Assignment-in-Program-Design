@@ -287,38 +287,33 @@ void GameJudge()
         flag = false;
     }
 }
-const char* CLASS_NAME = "GameControlWindow";
-
-
-LRESULT CALLBACK GameControl(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
-    switch (msg) {
-    case WM_KEYDOWN:
-        switch (wParam) {
-        case 'W':
-        case 'w':
-        case VK_UP:
-            moveup();
-            break;
-        case 'S':
-        case 's':
-        case VK_DOWN:
-            movedown();
-            break;
-        case 'A':
-        case 'a':
-        case VK_LEFT:
-            moveleft();
-            break;
-        case 'D':
-        case 'd':
-        case VK_RIGHT:
-            moveright();
-            break;
-        }
+//实现键盘控制
+void GameControl()
+{
+    //获取键盘输入
+    char key = _getch();
+    switch (key)
+    {
+    case'w':
+    case'W':
+    case 72:
+        moveup();
         break;
-    default:
-        return DefWindowProc(hwnd, msg, wParam, lParam);
+    case's':
+    case'S':
+    case 80:
+        movedown();
+        break;
+    case 'a':
+    case'A':
+    case 75:
+        moveleft();
+        break;
+    case'd':
+    case'D':
+    case 77:
+        moveright();
+        break;
     }
-    return 0;
 }
 

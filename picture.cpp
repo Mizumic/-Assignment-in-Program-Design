@@ -359,7 +359,7 @@ void suspendface(int Bktype, int Buttontype, IMAGE& snapshot) {
 }
 
 // play: 支持暂停后完全恢复界面
-int play(int Bktype, int Buttontype, IMAGE& background, HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+void play(int Bktype, int Buttontype,IMAGE background) {
     cleardevice(); // 清屏，准备绘制游戏画面
     printscreen(Bktype); // 绘制背景
     setlinecolor(RED);
@@ -370,11 +370,11 @@ int play(int Bktype, int Buttontype, IMAGE& background, HWND hwnd, UINT msg, WPA
     initButton(back, "gamefilepics\\button\\backw.png", "gamefilepics\\back.png", "gamefilepics\\button\\backc.png", 0, 0, 60, 50);
     initButton(suspend, "gamefilepics\\button\\suspendw.png", "gamefilepics\\button\\suspend.png", "gamefilepics\\button\\suspendc.png", 430, 0, 50, 50);
 
-    MOUSEMSG msg0{};
+    MOUSEMSG msg{};
     bool running = true;
 
     IMAGE pause;
-    loadimage(&pause, "gamefilepics\\button\\suspend.png",50,50);
+    loadimage(&pause, "gamefilepics\\button\\suspend.png", 50, 50);
 
     while (running) {
         if (Buttontype == 0) {
@@ -385,19 +385,18 @@ int play(int Bktype, int Buttontype, IMAGE& background, HWND hwnd, UINT msg, WPA
             transparentimage1(back.down, 0, 5);
             transparentimage1(pause, 450, 5);
         }
-        msg0 = GetMouseMsg();
-        updateButtonState(back, msg0);
-        updateButtonState(suspend, msg0);
+        msg = GetMouseMsg();
+        updateButtonState(back, msg);
+        updateButtonState(suspend, msg);
 
         // 返回主菜单
-        if (isMouseOnButton(back, msg0.x, msg0.y) && msg0.uMsg == WM_LBUTTONUP) {
+        if (isMouseOnButton(back, msg.x, msg.y) && msg.uMsg == WM_LBUTTONUP) {
             cleardevice();
-            putimage(0, 0, &background); // 恢复背景
             running = false;
         }
 
         // 暂停界面逻辑
-        if (isMouseOnButton(suspend, msg0.x, msg0.y) && msg0.uMsg == WM_LBUTTONUP) {
+        if (isMouseOnButton(suspend, msg.x, msg.y) && msg.uMsg == WM_LBUTTONUP) {
             // 保存当前屏幕内容
             IMAGE snapshot;
             getimage(&snapshot, 0, 0, getwidth(), getheight()); // 保存屏幕快照
@@ -429,19 +428,18 @@ int play(int Bktype, int Buttontype, IMAGE& background, HWND hwnd, UINT msg, WPA
         GameInit();
         while (1) {
             GameDraw();
-            GameControl(hwnd,msg,wParam,lParam);
+            GameControl();
             GameJudge();
         }
         getchar();
 
-        return 0;
     }
 }
 
 
 
 //为何button有两种？为适配校园不同的颜色，利好眼睛，注意游戏内容函数需要写两遍，分别用于两个Buttontype。
-void menu(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+void menu() {
     Button startGameButton, changeBkButton, showRuleButton, quitGameButton;
     Button startGameButton1, changeBkButton1, showRuleButton1, quitGameButton1;
     initButton(startGameButton, "gamefilepics\\button\\button browns 0.png", "gamefilepics\\button\\button browns 1.png", "gamefilepics\\button\\button browns 2.png", 150, 300, 214, 57);
@@ -455,7 +453,7 @@ void menu(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     initButton(quitGameButton1, "gamefilepics\\button\\button bluex 0.png", "gamefilepics\\button\\button bluex 1.png", "gamefilepics\\button\\button bluex 2.png", 150, 600, 214, 57);
     int Bktype = 0;
     int Buttontype = 0;
-    MOUSEMSG msg0{};
+    MOUSEMSG msg{};
     bool running = true;
     IMAGE background;
 
@@ -492,22 +490,22 @@ void menu(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
         // 处理鼠标消息
         while (true) {
-            msg0 = GetMouseMsg();
-            if (msg0.uMsg == WM_LBUTTONUP) {
+            msg = GetMouseMsg();
+            if (msg.uMsg == WM_LBUTTONUP) {
                 break; // 一旦检测到鼠标左键释放，退出循环
             }
             // 更新按钮状态
             for (int i = 0; i < 4; ++i) {
-                updateButtonState(*buttons[i], msg0);
+                updateButtonState(*buttons[i], msg);
             }
         }
 
         // 处理按钮点击事件
         for (int i = 0; i < 4; ++i) {
-            if (isMouseOnButton(*buttons[i], msg0.x, msg0.y) && msg0.uMsg == WM_LBUTTONUP) {
+            if (isMouseOnButton(*buttons[i], msg.x, msg.y) && msg.uMsg == WM_LBUTTONUP) {
                 if (i == 0) { // Start game button
                     preface(Bktype, Buttontype, background); // 传递背景图像
-                    play(Bktype, Buttontype, background, hwnd, msg, wParam, lParam); // 传递背景图像
+                    play(Bktype, Buttontype, background); // 传递背景图像
                 }
                 else if (i == 1) { // Change background button
                     chageBk(&Bktype, &Buttontype);
@@ -522,7 +520,7 @@ void menu(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
                     running = false;
                 }
                 else if (i == 0) { // Start game button
-                    play(Bktype, Buttontype, background, hwnd, msg, wParam, lParam);
+                    play(Bktype, Buttontype, background);
                 }
             }
         }
