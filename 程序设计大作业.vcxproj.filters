@@ -18,6 +18,9 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="1.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="music.cpp">
@@ -25,6 +28,9 @@
     </ClInclude>
     <ClInclude Include="picture.cpp">
       <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="2048.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

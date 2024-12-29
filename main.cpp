@@ -21,6 +21,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     ShowWindow(hwnd, SW_HIDE);
     //主程序
     initgraph(498, 810);
+    IMAGE imageBuffer;
+    getimage(&imageBuffer, 0, 0, getmaxx(), getmaxy()); // 捕获整个窗口的图像
     screen0();
     menu();
     closegraph();

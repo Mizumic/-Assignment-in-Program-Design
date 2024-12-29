@@ -6,6 +6,7 @@
 #include <mmsystem.h> // 包含多媒体函数
 #pragma comment(lib, "winmm.lib")
 
+
 // 设置结构体
 typedef struct {
 	float volume;        // 音量设置
