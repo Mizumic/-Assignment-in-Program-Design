@@ -4,7 +4,7 @@
 #define FRAME_Y 199
 #define FRAME_WIDTH 466 // 476 - 10（左右边距）
 #define FRAME_HEIGHT 454 // 653 - 199（上下边距）
-#define INTERVAL 10 // 格子间隔
+#define INTERVAL 3 // 格子间隔
 #define GRID_WIDTH (FRAME_WIDTH / MAX_GRID)
 #define GRID_HEIGHT (FRAME_HEIGHT / MAX_GRID)
 
@@ -288,32 +288,23 @@ void GameJudge()
     }
 }
 //实现键盘控制
-void GameControl()
-{
-    //获取键盘输入
-    char key = _getch();
-    switch (key)
-    {
-    case'w':
-    case'W':
-    case 72:
+void GameControl() {
+    while (true) {
+        if (GetAsyncKeyState('W') & 0x8000 || GetAsyncKeyState(VK_UP) & 0x8000) {
         moveup();
-        break;
-    case's':
-    case'S':
-    case 80:
+            Sleep(100); // 防止重复触发
+        }
+        else if (GetAsyncKeyState('S') & 0x8000 || GetAsyncKeyState(VK_DOWN) & 0x8000) {
         movedown();
-        break;
-    case 'a':
-    case'A':
-    case 75:
+            Sleep(100); // 防止重复触发
+        }
+        else if (GetAsyncKeyState('A') & 0x8000 || GetAsyncKeyState(VK_LEFT) & 0x8000) {
         moveleft();
-        break;
-    case'd':
-    case'D':
-    case 77:
+            Sleep(100); // 防止重复触发
+        }
+        else if (GetAsyncKeyState('D') & 0x8000 || GetAsyncKeyState(VK_RIGHT) & 0x8000) {
         moveright();
-        break;
+            Sleep(100); // 防止重复触发
+        }
     }
 }
-
