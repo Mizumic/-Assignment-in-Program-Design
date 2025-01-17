@@ -91,7 +91,7 @@ int Music() {
 	initSettings(&settings); // 初始化设置
 	setBgmList(&settings, bgmFiles, sizeof(bgmFiles) / sizeof(bgmFiles[0])); // 设置背景音乐列表
 
-	adjustVolume(&settings, 0.5f); // 调整音量为50%
+	adjustVolume(&settings, 0.3f); // 调整音量为30%
 
 	setAnimationSpeed(&settings, 1.0f); // 设置动画速度为1.0
 

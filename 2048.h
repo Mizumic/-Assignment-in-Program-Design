@@ -33,13 +33,16 @@ int gamemap[MAX_GRID][MAX_GRID];//全局变量自动化为0,map数组用于存�
 POINT pos[MAX_GRID][MAX_GRID];//结构体保存每个格子左上角的坐标
 bool flag = false;
 int GameEnd=0;
-IMAGE numpic[11];
+int Con;
+int gamemap_sd[MAX_GRID][MAX_GRID];//备份数组
+
+IMAGE numpic[12];
 //加载数字图片
 void NumInit() {
-    for (int i = 0; i < 11; i++)
+    for (int i = 1; i < 12; i++)
     {
         char path[40];
-        sprintf_s(path, "gamefilepics\\%d.jpg", num[i+1]);
+        sprintf_s(path, "gamefilepics\\%d.jpg", num[i]);
         loadimage(&numpic[i], path);
     }
 }
@@ -371,6 +374,11 @@ void GameJudge()
         GameEnd = 1;
         goto end;
     }
+    if (Con)
+    {
+        printf("wrong input");
+        goto end;
+    }
     if (flag)
     {
         CreateNumber();
@@ -390,25 +398,93 @@ void GameControl()
     case'W':
     case 72:
         printf("up\n");
+        // 备份当前的游戏状态
+        for (int i = 0; i < MAX_GRID; i++) {
+            for (int j = 0; j < MAX_GRID; j++) {
+                gamemap_sd[i][j] = gamemap[i][j];
+            }
+        }
         MoveUp();
+        Con = 1;
+		//循环判断是否有改变
+        for (int i = 0; i < MAX_GRID; i++) {
+            for (int j = 0; j < MAX_GRID; j++) {
+                if (gamemap_sd[i][j] != gamemap[i][j])
+                {
+                    Con = 0;
+                    break;
+                }
+            }
+        }
         break;
     case's':
     case'S':
     case 80:
         printf("down\n");
+        // 备份当前的游戏状态
+        for (int i = 0; i < MAX_GRID; i++) {
+            for (int j = 0; j < MAX_GRID; j++) {
+                gamemap_sd[i][j] = gamemap[i][j];
+            }
+        }
         MoveDown();
+        Con = 1;
+        //循环判断是否有改变
+        for (int i = 0; i < MAX_GRID; i++) {
+            for (int j = 0; j < MAX_GRID; j++) {
+                if (gamemap_sd[i][j] != gamemap[i][j])
+                {
+                    Con = 0;
+                    break;
+                }
+            }
+        }
         break;
     case 'a':
     case'A':
     case 75:
         printf("left\n");
+        // 备份当前的游戏状态
+        for (int i = 0; i < MAX_GRID; i++) {
+            for (int j = 0; j < MAX_GRID; j++) {
+                gamemap_sd[i][j] = gamemap[i][j];
+            }
+        }
         MoveLeft();
+        Con = 1;
+        //循环判断是否有改变
+        for (int i = 0; i < MAX_GRID; i++) {
+            for (int j = 0; j < MAX_GRID; j++) {
+                if (gamemap_sd[i][j] != gamemap[i][j])
+                {
+                    Con = 0;
+                    break;
+                }
+            }
+        }
         break;
     case'd':
     case'D':
     case 77:
         printf("right\n");
+        // 备份当前的游戏状态
+        for (int i = 0; i < MAX_GRID; i++) {
+            for (int j = 0; j < MAX_GRID; j++) {
+                gamemap_sd[i][j] = gamemap[i][j];
+            }
+        }
         MoveRight();
+        Con = 1;
+        //循环判断是否有改变
+        for (int i = 0; i < MAX_GRID; i++) {
+            for (int j = 0; j < MAX_GRID; j++) {
+                if (gamemap_sd[i][j] != gamemap[i][j])
+                {
+                    Con = 0;
+                    break;
+                }
+            }
+        }
         break;
     }
 }

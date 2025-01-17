@@ -29,7 +29,7 @@ int end() {
 		settextcolor(BLACK);
 		settextstyle(25, 0, "Consolas");
 		// 输出文字
-		char scoreText[20];
+		char scoreText[40];
 		sprintf_s(scoreText, "你的分数是:%d", score);
 		outtextxy(100, 150, _T("游戏结束"));
 		outtextxy(100, 200, scoreText);
