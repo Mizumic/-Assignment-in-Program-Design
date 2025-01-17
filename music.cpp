@@ -19,7 +19,7 @@ typedef struct {
 
 // 初始化设置
 void initSettings(Settings* settings) {
-	settings->volume = 0.5f; // 默认音量为50%
+	settings->volume = 0.3f; // 默认音量为30%
 	settings->animationSpeed = 1.0f; // 默认动画速度为1.0
 	settings->bgmIndex = 0; // 默认背景音乐索引
 }
@@ -53,9 +53,9 @@ void playMusic(const char* filename) {
 }
 
 // 切换背景音乐
-void switchBgm(Settings* settings) {
+void switchBgm(Settings* settings,int random) {
 	if (settings->bgmCount > 1) {
-		settings->bgmIndex = (settings->bgmIndex + 1) % settings->bgmCount;
+		settings->bgmIndex = (settings->bgmIndex + random) % settings->bgmCount;
 		playMusic(settings->bgmList[settings->bgmIndex]); // 播放新的BGM
 	}
 	else {
@@ -88,18 +88,24 @@ int Music() {
 	Settings settings;
 	const char* bgmFiles[] = { "Music\\1.mp3", "Music\\2.mp3", "Music\\3.mp3", "Music\\4.mp3" }; // 使用相对路径
 
-	initSettings(&settings);
+	initSettings(&settings); // 初始化设置
 	setBgmList(&settings, bgmFiles, sizeof(bgmFiles) / sizeof(bgmFiles[0])); // 设置背景音乐列表
 
-	adjustVolume(&settings, 0.7f); // 调整音量为70%
+	adjustVolume(&settings, 0.5f); // 调整音量为50%
 
-	setAnimationSpeed(&settings, 0.8f); // 设置动画速度为0.8
+	setAnimationSpeed(&settings, 1.0f); // 设置动画速度为1.0
 
 	srand((unsigned int)time(NULL)); // 初始化随机数种子
 
+	int random = rand() % 4; // 生成随机数
+	int t;
 	// 随机播放背景音乐
 	do {
-		switchBgm(&settings); // 切换到下一首BGM
+	re:
+		t = random;
+		int random = rand()%4; // 生成随机数
+		if (random == t) goto re;
+		switchBgm(&settings,random); // 切换到下一首BGM
 		// 等待音乐播放结束
 		while (mciSendString("status bgm mode", NULL, 0, NULL) == 0) {
 			Sleep(100); // 每100毫秒检查一次

@@ -7,22 +7,24 @@
 #include<string.h>
 #include <graphics.h>
 #include<conio.h>
+#include<windows.h>
 extern int GameEnd;//1是胜利，-1是失败
-extern int score;
+extern int score; 
 char test[100];
 char ch;
 
 int Restart();
 int end() {
+	setbkmode(TRANSPARENT);
 	//sprintf_s(test, "GameEnd:%d", GameEnd);
 	//outtextxy(100, 600, test);
 	//跳出一个结算界面
 	if (GameEnd==-1) 
 	{
-		setlinecolor(BLUE);
+		setlinecolor(BLACK);
 		setfillcolor(YELLOW);
 		rectangle(80, 130, 400, 520);
-		floodfill(85, 135,BLUE);
+		floodfill(85, 135,BLACK);
 		// 设置字体
 		settextcolor(BLACK);
 		settextstyle(25, 0, "Consolas");
@@ -71,10 +73,10 @@ int end() {
 	}
 	else if (GameEnd == 1)
 	{
-		setlinecolor(BLUE);
+		setlinecolor(BLACK);
 		setfillcolor(YELLOW);
 		rectangle(80, 130, 400, 520);
-		floodfill(85, 135, BLUE);
+		floodfill(85, 135, BLACK);
 		// 设置字体
 		settextcolor(BLACK);
 		settextstyle(25, 0, "Consolas");
@@ -94,7 +96,10 @@ int end() {
 			if (ch == ' ')
 				break;
 			else if (ch == 'R' || ch == 'r')
+			{
 				Restart();
+				break;
+			}
 		}
 		// 关闭图形窗口
 		closegraph();

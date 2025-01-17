@@ -7,6 +7,8 @@
 #define INTERVAL 3 // 格子间隔
 #define GRID_WIDTH (FRAME_WIDTH / MAX_GRID)
 #define GRID_HEIGHT (FRAME_HEIGHT / MAX_GRID)
+#include<graphics.h>
+#include<conio.h>
 
 enum Color {
     zero = RGB(205, 193, 180), //0的颜色
@@ -31,6 +33,17 @@ int gamemap[MAX_GRID][MAX_GRID];//全局变量自动化为0,map数组用于存�
 POINT pos[MAX_GRID][MAX_GRID];//结构体保存每个格子左上角的坐标
 bool flag = false;
 int GameEnd=0;
+IMAGE numpic[11];
+//加载数字图片
+void NumInit() {
+    for (int i = 0; i < 11; i++)
+    {
+        char path[40];
+        sprintf_s(path, "gamefilepics\\%d.jpg", num[i+1]);
+        loadimage(&numpic[i], path);
+    }
+}
+
 
 //定义函数，随机返回2/4
 int TwoOrFour()
@@ -75,6 +88,7 @@ void updateHighScore()
 
 void GameInit() {
     srand(GetTickCount64());
+	NumInit();
     for (int i = 0; i < MAX_GRID; i++) {
         for (int k = 0; k < MAX_GRID; k++) {
             pos[i][k].x = FRAME_X + k * GRID_WIDTH + k * INTERVAL;
@@ -95,20 +109,47 @@ void GameDraw() {
                 if (gamemap[i][k] == num[q]) {
                     setfillcolor(arr[q]);
                     solidrectangle(pos[i][k].x, pos[i][k].y, pos[i][k].x + GRID_WIDTH, pos[i][k].y + GRID_HEIGHT);
-                    if (gamemap[i][k] != 0) {
-                        char number[5] = " ";
-                        settextcolor(BLACK);
-                        settextstyle(30, 0, "Consolas");
-                        setbkmode(TRANSPARENT);
-                        sprintf_s(number, "%d", gamemap[i][k]);
-                        int tempx = GRID_WIDTH / 2 - textwidth(number) / 2;
-                        int tempy = GRID_HEIGHT / 2 - textheight(number) / 2;
-                        outtextxy(pos[i][k].x + tempx, pos[i][k].y + tempy, number);
-                    }
+                    //if (gamemap[i][k] != 0) 
+                    //{
+                    //    char number[5] = " ";
+                    //    settextcolor(BLACK);
+                    //    settextstyle(30, 0, "Consolas");
+                    //    setbkmode(TRANSPARENT);
+                    //    sprintf_s(number, "%d", gamemap[i][k]);
+                    //    int tempx = GRID_WIDTH / 2 - textwidth(number) / 2;
+                    //    int tempy = GRID_HEIGHT / 2 - textheight(number) / 2;
+                    //    outtextxy(pos[i][k].x + tempx, pos[i][k].y + tempy, number);
+                    //}
                 }
             }
         }
     }
+    //void GameDraw() {
+    setlinecolor(BLACK); // 设置线条颜色为黑色
+    rectangle(FRAME_X, FRAME_Y, FRAME_X + FRAME_WIDTH, FRAME_Y + FRAME_HEIGHT); // 绘制游戏框
+
+    for (int i = 0; i < MAX_GRID; i++) {
+        for (int k = 0; k < MAX_GRID; k++) {
+            if (gamemap[i][k] != 0) {
+                // 绘制方格背景
+                setfillcolor(BLUE); // BACKGROUND_COLOR为定义好的背景颜色
+                solidrectangle(pos[i][k].x, pos[i][k].y, pos[i][k].x + GRID_WIDTH, pos[i][k].y + GRID_HEIGHT);
+
+                // 绘制数字图片
+                int numIndex = gamemap[i][k]; // 获取当前方格的数字
+                int Index = 0;
+                for (Index = 0; Index < 12; Index++) 
+                {
+                    if (numIndex == num[Index]) 
+                    {
+                        break;
+                    }
+                }
+                    IMAGE* img = &numpic[Index]; // 获取对应的图片指针
+                    putimage(pos[i][k].x, pos[i][k].y, GRID_WIDTH, GRID_HEIGHT,img, 0, 0);; // 将图片绘制到方格位置
+                }
+            }
+        }
     setfillcolor(back);//使用背景色
     solidrectangle(250, 0, 446, 25);
     //solidrectangle(250, 25, 446, 50);
@@ -322,17 +363,21 @@ void GameJudge()
     {
         printf("lose");
         GameEnd = -1;
+        goto end;
     }
     if (check == 1)
     {
         printf("win");
         GameEnd = 1;
+        goto end;
     }
     if (flag)
     {
         CreateNumber();
         flag = false;
     }
+end:
+    1;
 }
 //实现键盘控制
 void GameControl()
