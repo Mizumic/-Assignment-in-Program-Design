@@ -158,6 +158,7 @@ void GameDraw() {
     //solidrectangle(250, 25, 446, 50);
 
     char scoreText[20];
+    setbkmode(TRANSPARENT);
     sprintf_s(scoreText, "Score:%d", score);
     settextstyle(24, 0, "Consolas");
     settextcolor(WHITE);//设置文本颜色

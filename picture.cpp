@@ -1,5 +1,6 @@
 //默认0，1，2，3，4代指nx南校，bx,北校，dx东校，zh珠海，sz深圳
 //注意button结尾，s start, e exchange, x exit, m music.
+#pragma once
 #define _CRT_SECURE_NO_WARNINGS
 #include<windows.h>
 #include <bits/stdc++.h>
@@ -14,6 +15,9 @@
 
 int GameStart=0;
 IMAGE imageBuffer;
+int Bktype = 0;
+int Buttontype = 0;
+IMAGE background;
 
 void transparentimage1(IMAGE img,int x, int y) {
     IMAGE img1;
@@ -443,11 +447,10 @@ void menu() {
     initButton(changeBkButton1, "gamefilepics\\button\\button bluee 0.png", "gamefilepics\\button\\button bluee 1.png", "gamefilepics\\button\\button bluee 2.png", 150, 400, 214, 57);
     initButton(showRuleButton1, "gamefilepics\\button\\button bluer 0.png", "gamefilepics\\button\\button bluer 1.png", "gamefilepics\\button\\button bluer 2.png", 150, 500, 214, 57);
     initButton(quitGameButton1, "gamefilepics\\button\\button bluex 0.png", "gamefilepics\\button\\button bluex 1.png", "gamefilepics\\button\\button bluex 2.png", 150, 600, 214, 57);
-    int Bktype = 0;
-    int Buttontype = 0;
+
     MOUSEMSG msg{};
     bool running = true;
-    IMAGE background;
+
 
     // 保存初始背景
     getimage(&background, 0, 0, getwidth(), getheight());
