@@ -33,7 +33,7 @@ bool flag = false;
 int GameEnd=0;
 
 //定义函数，随机返回2/4
-int twoOrFour()
+int TwoOrFour()
 {
     if (rand() % 10 == 0)
     {
@@ -53,7 +53,7 @@ void CreateNumber()
         int y = rand() % MAX_GRID;
         if (gamemap[x][y] == 0)
         {
-            gamemap[x][y] = twoOrFour();
+            gamemap[x][y] = TwoOrFour();
             break;
         }
     }
@@ -73,16 +73,8 @@ void updateHighScore()
         highScore = score;//更新最高分数
 }
 
-void resetScore()
-{
-    score = 0;
-}
-
-
-
-
 void GameInit() {
-    srand(GetTickCount());
+    srand(GetTickCount64());
     for (int i = 0; i < MAX_GRID; i++) {
         for (int k = 0; k < MAX_GRID; k++) {
             pos[i][k].x = FRAME_X + k * GRID_WIDTH + k * INTERVAL;
@@ -91,7 +83,7 @@ void GameInit() {
     }
     CreateNumber();
     CreateNumber();
-    resetScore();
+    score = 0;
 }
 void GameDraw() {
     setlinecolor(BLACK); // 设置线条颜色为黑色
@@ -329,7 +321,7 @@ void GameJudge()
     if (check == -1)
     {
         printf("lose");
-        GameEnd = 1;
+        GameEnd = -1;
     }
     if (check == 1)
     {
@@ -376,3 +368,18 @@ void GameControl()
     }
 }
 
+int Game() {
+    GameInit();
+    GameDraw();
+    while (1)
+    {
+        GameDraw();
+        GameControl();
+        GameJudge();
+        if (GameEnd != 0)
+        {
+            break;
+        }
+    }
+    return 0;
+}

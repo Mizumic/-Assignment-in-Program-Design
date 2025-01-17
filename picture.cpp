@@ -10,10 +10,9 @@
 #include <ctime>
 #include "2048.h"
 #include <iostream>
-#include <graphics.h>
 #pragma comment( lib, "MSIMG32.LIB")
 
-bool GameStart;
+int GameStart=0;
 IMAGE imageBuffer;
 
 void transparentimage1(IMAGE img,int x, int y) {
@@ -424,16 +423,8 @@ void play(int Bktype, int Buttontype,IMAGE background) {
         suspend.isDown = false;
         suspend.isHover = false;
 
-        // 游戏循环
-
-        GameInit();
-        while (1) {
-            GameDraw();
-            GameControl();
-            GameJudge();
-        }
-        getchar();
-
+        // 游戏
+        GameStart = 1;
     }
 }
 

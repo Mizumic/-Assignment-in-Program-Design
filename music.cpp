@@ -6,6 +6,7 @@
 #include <mmsystem.h> // 包含多媒体函数
 #pragma comment(lib, "winmm.lib")
 
+extern int GameEnd;
 
 // 设置结构体
 typedef struct {
@@ -102,8 +103,10 @@ int Music() {
 		// 等待音乐播放结束
 		while (mciSendString("status bgm mode", NULL, 0, NULL) == 0) {
 			Sleep(100); // 每100毫秒检查一次
+			if (GameEnd) goto end;// 如果检测到游戏结束，跳出循环，关闭音乐
 		}
 	} while (mciSendString("status bgm mode", NULL, 0, NULL) != 0); // 检查是否还有音乐在播放
+	end:
 	stopMusic(); // 停止音乐
 	return 0;
 }

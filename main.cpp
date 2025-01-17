@@ -7,16 +7,19 @@
 #include<process.h>
 #include"picture.cpp"
 #include"music.cpp"
+#include"gameend.cpp"
 // 声明线程函数
 DWORD WINAPI MusicThread(LPVOID lpParam);
 DWORD WINAPI ScreenAndMenuThread(LPVOID lpParam);
+DWORD WINAPI GameEndThread(LPVOID lpParam);
 DWORD WINAPI GameThread(LPVOID lpParam);
 //int game();
-extern int GameEnd;
+extern int GameEnd;//1是胜利，-1是失败
+extern int GameStart;
 
 int main() {
-    HANDLE hMusicThread, hScreenAndMenuThread,hGameThread;
-    DWORD threadId1, threadId2,threadId3;
+    HANDLE hMusicThread, hScreenAndMenuThread,hGameEndThread,hGameThread;
+    DWORD threadId1, threadId2,threadId3,threadId4;
 
     // 初始化图形窗口
     initgraph(498, 810);
@@ -52,14 +55,30 @@ int main() {
         return 1;
     }
 
-	// 创建游戏线程
+	// 创建游戏结束线程
+    hGameEndThread = CreateThread(
+        NULL,                   // 默认安全属性
+        0,                      // 使用默认堆栈大小  
+        GameEndThread,             // 线程函数名称
+        NULL,                   // 参数传递给线程函数 
+        0,                      // 立即运行线程 
+        &threadId3);            // 返回线程标识符 
+
+    if (hGameEndThread == NULL) {
+        printf("CreateThread failed (%d).\n", GetLastError());
+        CloseHandle(hMusicThread);
+        closegraph();
+        return 1;
+    }
+
+    // 创建游戏线程
     hGameThread = CreateThread(
         NULL,                   // 默认安全属性
         0,                      // 使用默认堆栈大小  
         GameThread,             // 线程函数名称
         NULL,                   // 参数传递给线程函数 
         0,                      // 立即运行线程 
-        &threadId3);            // 返回线程标识符 
+        &threadId4);            // 返回线程标识符 
 
     if (hGameThread == NULL) {
         printf("CreateThread failed (%d).\n", GetLastError());
@@ -69,12 +88,13 @@ int main() {
     }
 
     // 等待线程完成
-    WaitForSingleObject(hGameThread, INFINITE);
+    WaitForSingleObject(hGameEndThread, INFINITE);
 
     // 关闭线程句柄
     CloseHandle(hMusicThread);
     CloseHandle(hScreenAndMenuThread);
-	CloseHandle(hGameThread);
+	CloseHandle(hGameEndThread);
+    CloseHandle(hGameThread);
 
     // 关闭图形窗口
     closegraph();
@@ -95,18 +115,32 @@ DWORD WINAPI ScreenAndMenuThread(LPVOID lpParam) {
     return 0;
 }
 
-DWORD WINAPI GameThread(LPVOID lpParam) {
+// 游戏结束线程函数
+DWORD WINAPI GameEndThread(LPVOID lpParam) {
     printf("Test\n");
     while (1)
     { 
         if (GameEnd)
         {
+            end();
             return 0;
         }
     }
 }
 
-
+DWORD WINAPI GameThread(LPVOID lpParam) {
+    while (1) {
+        if (GameStart == 1)
+        {
+            Game();
+        }
+        if (GameEnd)
+        {
+            return 0;
+        }
+    }
+    return 0;
+}
 
 
 //int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
